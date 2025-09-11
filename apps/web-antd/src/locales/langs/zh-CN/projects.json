@@ -1,0 +1,32 @@
+{
+  "title": "项目管理",
+  "antd": "项目列表",
+  "indications": {
+    "indication": "适应症",
+    "title": "适应症管理",
+    "lists": {
+      "columns": {
+        "name": "适应症名称",
+        "remark": "备注",
+        "status": "状态",
+        "createdAt": "创建时间",
+        "updatedAt": "更新时间"
+      }
+    }
+  },
+  "projects": {
+    "project": "项目",
+    "title": "项目列表",
+    "lists": {
+      "columns": {
+        "projectName": "项目名称",
+        "medicineName": "药物名称",
+        "projectType": "项目类型",
+        "remark": "项目补助金额（¥）",
+        "status": "状态",
+        "createdAt": "创建时间",
+        "updatedAt": "更新时间"
+      }
+    }
+  }
+}
