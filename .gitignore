@@ -1,4 +1,4 @@
-node_modules
+**/node_modules
 .DS_Store
 dist
 dist-ssr
@@ -49,3 +49,4 @@ vite.config.ts.*
 *.sln
 *.sw?
 .history
+node_modules/
