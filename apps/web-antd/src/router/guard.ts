@@ -6,7 +6,6 @@ import { useAccessStore, useUserStore } from '@vben/stores';
 import { startProgress, stopProgress } from '@vben/utils';
 
 import { accessRoutes, coreRouteNames } from '#/router/routes';
-import { useAuthStore } from '#/store';
 
 import { generateAccess } from './access';
 
@@ -48,7 +47,7 @@ function setupAccessGuard(router: Router) {
   router.beforeEach(async (to, from) => {
     const accessStore = useAccessStore();
     const userStore = useUserStore();
-    const authStore = useAuthStore();
+    // const authStore = useAuthStore();
 
     // 基本路由，这些路由不需要进入权限拦截
     if (coreRouteNames.includes(to.name as string)) {
@@ -92,12 +91,12 @@ function setupAccessGuard(router: Router) {
 
     // 生成路由表
     // 当前登录用户拥有的角色标识列表
-    const userInfo = userStore.userInfo || (await authStore.fetchUserInfo());
-    const userRoles = userInfo.roles ?? [];
+    // const userInfo = userStore.userInfo || (await authStore.fetchUserInfo());
+    // const userRoles = userInfo.roles ?? [];
 
     // 生成菜单和路由
     const { accessibleMenus, accessibleRoutes } = await generateAccess({
-      roles: userRoles,
+      // roles: userRoles,
       router,
       // 则会在菜单中显示，但是访问会被重定向到403
       routes: accessRoutes,
@@ -107,9 +106,13 @@ function setupAccessGuard(router: Router) {
     accessStore.setAccessMenus(accessibleMenus);
     accessStore.setAccessRoutes(accessibleRoutes);
     accessStore.setIsAccessChecked(true);
+    // const redirectPath = (from.query.redirect ??
+    //   (to.path === DEFAULT_HOME_PATH
+    //     ? userInfo.homePath || DEFAULT_HOME_PATH
+    //     : to.fullPath)) as string;
     const redirectPath = (from.query.redirect ??
       (to.path === DEFAULT_HOME_PATH
-        ? userInfo.homePath || DEFAULT_HOME_PATH
+        ? DEFAULT_HOME_PATH
         : to.fullPath)) as string;
 
     return {

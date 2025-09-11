@@ -23,9 +23,12 @@ export namespace IndicationsApi {
  * 获取适应症列表数据
  */
 async function getIndicationsList(params: IndicationsApi.PageFetchParams) {
-  return requestClient.get<Array<IndicationsApi.Indication>>('/indications', {
-    params,
-  });
+  return requestClient.get<Array<IndicationsApi.Indication>>(
+    '/indication/page',
+    {
+      params,
+    },
+  );
 }
 
 /**
@@ -35,7 +38,7 @@ async function getIndicationsList(params: IndicationsApi.PageFetchParams) {
 async function createIndication(
   data: Omit<IndicationsApi.Indication, 'children' | 'id'>,
 ) {
-  return requestClient.post('/indications', data);
+  return requestClient.post('/indication', data);
 }
 
 /**
@@ -48,7 +51,7 @@ async function updateIndication(
   id: string,
   data: Omit<IndicationsApi.Indication, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/indications/${id}`, data);
+  return requestClient.put(`/indication/${id}`, data);
 }
 
 /**
@@ -56,7 +59,7 @@ async function updateIndication(
  * @param id 部门 ID
  */
 async function deleteIndication(id: string) {
-  return requestClient.delete(`/indications/${id}`);
+  return requestClient.delete(`/indication/${id}`);
 }
 
 export {
