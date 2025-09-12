@@ -1,4 +1,4 @@
-import type { Recordable, UserInfo } from '@vben/types';
+import type { Recordable } from '@vben/types';
 
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -6,11 +6,9 @@ import { useRouter } from 'vue-router';
 import { DEFAULT_HOME_PATH, LOGIN_PATH } from '@vben/constants';
 import { resetAllStores, useAccessStore } from '@vben/stores';
 
-import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
 import { loginApi, logoutApi } from '#/api';
-import { $t } from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
@@ -29,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
     onSuccess?: () => Promise<void> | void,
   ) {
     // 异步处理用户登录操作并获取 accessToken
-    const userInfo: null | UserInfo = null;
+    // const userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
       const { token } = await loginApi(params);
@@ -51,18 +49,21 @@ export const useAuthStore = defineStore('auth', () => {
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);
         } else {
+          // onSuccess
+          //   ? await onSuccess?.()
+          //   : await router.push(userInfo.homePath || DEFAULT_HOME_PATH);
           onSuccess
             ? await onSuccess?.()
-            : await router.push(userInfo.homePath || DEFAULT_HOME_PATH);
+            : await router.push(DEFAULT_HOME_PATH);
         }
 
-        if (userInfo?.realName) {
-          notification.success({
-            description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
-            duration: 3,
-            message: $t('authentication.loginSuccess'),
-          });
-        }
+        // if (userInfo?.realName) {
+        //   notification.success({
+        //     description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+        //     duration: 3,
+        //     message: $t('authentication.loginSuccess'),
+        //   });
+        // }
       }
     } finally {
       loginLoading.value = false;

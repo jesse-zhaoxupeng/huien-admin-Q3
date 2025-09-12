@@ -24,7 +24,7 @@ export namespace ParticipantsApi {
  */
 async function exportParticipantsList(params: ParticipantsApi.PageFetchParams) {
   return requestClient.get<{ fileName: string; url: string }>(
-    '/participants/export',
+    '/participant/export',
     {
       params,
     },
@@ -38,19 +38,16 @@ async function exportParticipantsList(params: ParticipantsApi.PageFetchParams) {
  * 获取适应症列表数据
  */
 async function getParticipantsList(params: ParticipantsApi.PageFetchParams) {
-  return requestClient.get<Array<ParticipantsApi.Participant>>(
-    '/participants',
-    {
-      params,
-    },
-  );
+  return requestClient.get<Array<ParticipantsApi.Participant>>('/participant', {
+    params,
+  });
 }
 
 /**
  * 获取适应症列表数据
  */
 async function getAuditStatusStatistics(params: object = {}) {
-  return requestClient.get<any[]>('/participants/auditStatusStatistics', {
+  return requestClient.get<any[]>('/participant/auditStatusStatistics', {
     params,
   });
 }
@@ -64,7 +61,7 @@ async function getAuditStatusStatistics(params: object = {}) {
 async function createParticipant(
   data: Omit<ParticipantsApi.Participant, 'children' | 'id'>,
 ) {
-  return requestClient.post('/participants', data);
+  return requestClient.post('/participant', data);
 }
 
 /**
@@ -77,7 +74,7 @@ async function auditParticipant(
   id: string,
   data: Omit<ParticipantsApi.Participant, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/participants/audit/${id}`, data);
+  return requestClient.put(`/participant/audit/${id}`, data);
 }
 
 /**
@@ -90,7 +87,7 @@ async function updateParticipant(
   id: string,
   data: Omit<ParticipantsApi.Participant, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/participants/${id}`, data);
+  return requestClient.put(`/participant/${id}`, data);
 }
 
 /**
@@ -98,7 +95,7 @@ async function updateParticipant(
  * @param id 部门 ID
  */
 async function deleteParticipant(id: string) {
-  return requestClient.delete(`/participants/${id}`);
+  return requestClient.delete(`/participant/${id}`);
 }
 
 export {

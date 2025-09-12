@@ -23,7 +23,7 @@ export namespace CitysApi {
  * 获取适应症列表数据
  */
 async function getCitysList(params: CitysApi.PageFetchParams) {
-  return requestClient.get<Array<CitysApi.City>>('/cities', {
+  return requestClient.get<Array<CitysApi.City>>('/city', {
     params,
   });
 }
@@ -35,7 +35,7 @@ async function getCitysList(params: CitysApi.PageFetchParams) {
  * @param data 部门数据
  */
 async function createCity(data: Omit<CitysApi.City, 'children' | 'id'>) {
-  return requestClient.post('/cities', data);
+  return requestClient.post('/city', data);
 }
 
 /**
@@ -48,7 +48,7 @@ async function auditCity(
   id: string,
   data: Omit<CitysApi.City, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/cities/audit/${id}`, data);
+  return requestClient.put(`/city/audit/${id}`, data);
 }
 
 /**
@@ -61,7 +61,7 @@ async function updateCity(
   id: string,
   data: Omit<CitysApi.City, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/cities/${id}`, data);
+  return requestClient.put(`/city/${id}`, data);
 }
 
 /**
@@ -69,7 +69,7 @@ async function updateCity(
  * @param id 部门 ID
  */
 async function deleteCity(id: string) {
-  return requestClient.delete(`/cities/${id}`);
+  return requestClient.delete(`/city/${id}`);
 }
 
 export { auditCity, createCity, deleteCity, getCitysList, updateCity };

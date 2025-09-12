@@ -24,7 +24,7 @@ export namespace ProjectsApi {
     page: number;
     pageSize: number;
   }
-  
+
   export interface ProjectHospitalPageParams {
     pageNo: number;
     pageSize: number;
@@ -39,7 +39,7 @@ async function getProjectOpenHospitals(
   params: ProjectsApi.PageFetchProjectOpenHospitalsParams,
 ) {
   return requestClient.get<Array<ProjectsApi.Project>>(
-    `/projects/${params.projectId}/hospitals`,
+    `/project/${params.projectId}/hospitals`,
     {
       params,
     },
@@ -64,7 +64,7 @@ async function getProjectHospitalPage(
 async function createProjectOpenHospital(
   data: Omit<ProjectsApi.Project, 'children' | 'id'>,
 ) {
-  return requestClient.post('/projects/openHospital', data);
+  return requestClient.post('/project/openHospital', data);
 }
 
 /**
@@ -77,14 +77,14 @@ async function updateProjectOpenHospital(
   id: string,
   data: Omit<ProjectsApi.Project, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/projects/openHospital/${id}`, data);
+  return requestClient.put(`/project/openHospital/${id}`, data);
 }
 
 /**
  * 获取适应症列表数据
  */
 async function getProjectsList(params: ProjectsApi.PageFetchParams) {
-  return requestClient.get<Array<ProjectsApi.Project>>('/projects', {
+  return requestClient.get<Array<ProjectsApi.Project>>('/project', {
     params,
   });
 }
@@ -96,7 +96,7 @@ async function getProjectsList(params: ProjectsApi.PageFetchParams) {
 async function createProject(
   data: Omit<ProjectsApi.Project, 'children' | 'id'>,
 ) {
-  return requestClient.post('/projects', data);
+  return requestClient.post('/project', data);
 }
 
 /**
@@ -109,7 +109,7 @@ async function updateProject(
   id: string,
   data: Omit<ProjectsApi.Project, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/projects/${id}`, data);
+  return requestClient.put(`/project/${id}`, data);
 }
 
 /**
@@ -117,7 +117,7 @@ async function updateProject(
  * @param id 部门 ID
  */
 async function deleteProject(id: string) {
-  return requestClient.delete(`/projects/${id}`);
+  return requestClient.delete(`/project/${id}`);
 }
 
 /**
@@ -125,15 +125,15 @@ async function deleteProject(id: string) {
  * @param id 部门 ID
  */
 async function deleteProjectOpenHospital(id: string) {
-  return requestClient.delete(`/projects/openHospital/${id}/delete`);
+  return requestClient.delete(`/project/openHospital/${id}/delete`);
 }
 
 async function updateProjectHospitalStatus(params: object) {
-  return requestClient.post(`/projects/openHospital/batchUpdateStatus`, params);
+  return requestClient.post(`/project/openHospital/batchUpdateStatus`, params);
 }
 
 async function updateProjectHospitalRemove(params: object) {
-  return requestClient.post(`/projects/openHospital/batchRemove`, params);
+  return requestClient.post(`/project/openHospital/batchRemove`, params);
 }
 
 //

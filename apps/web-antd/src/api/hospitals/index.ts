@@ -23,7 +23,7 @@ export namespace HospitalsApi {
  * 获取适应症列表数据
  */
 async function getHospitalsList(params: HospitalsApi.PageFetchParams) {
-  return requestClient.get<Array<HospitalsApi.Hospital>>('/hospitals', {
+  return requestClient.get<Array<HospitalsApi.Hospital>>('/hospital', {
     params,
   });
 }
@@ -35,7 +35,7 @@ async function getHospitalsList(params: HospitalsApi.PageFetchParams) {
 async function createHospital(
   data: Omit<HospitalsApi.Hospital, 'children' | 'id'>,
 ) {
-  return requestClient.post('/hospitals', data);
+  return requestClient.post('/hospital', data);
 }
 
 /**
@@ -48,7 +48,7 @@ async function updateHospital(
   id: string,
   data: Omit<HospitalsApi.Hospital, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/hospitals/${id}`, data);
+  return requestClient.put(`/hospital/${id}`, data);
 }
 
 /**
@@ -56,7 +56,7 @@ async function updateHospital(
  * @param id 部门 ID
  */
 async function deleteHospital(id: string) {
-  return requestClient.delete(`/hospitals/${id}`);
+  return requestClient.delete(`/hospital/${id}`);
 }
 
 export { createHospital, deleteHospital, getHospitalsList, updateHospital };
