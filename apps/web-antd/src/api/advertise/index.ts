@@ -18,6 +18,12 @@ export namespace AdImageApi {
   export interface upDataFetchParams {
     [key: string]: any;
   }
+  export interface UploadFileParams {
+    file: File;
+    onError?: (error: Error) => void;
+    onProgress?: (progress: { percent: number }) => void;
+    onSuccess?: (data: any, file: File) => void;
+  }
 }
 
 /**
@@ -48,4 +54,26 @@ async function upDataAdImage(params: AdImageApi.upDataFetchParams) {
     },
   );
 }
-export { getAdImageList, upDataAdImage };
+async function uploadFile({
+  file,
+  onError,
+  onProgress,
+  onSuccess,
+}: AdImageApi.UploadFileParams) {
+  try {
+    onProgress?.({ percent: 0 });
+
+    const data = await requestClient.upload('/upload/adimage', { file });
+    const uploadResult = {
+      name: file.name, // 文件名
+      status: 'done',
+      url: `https://www.huienmed:8181/images/${data}`, // 服务器返回的图片 URL
+    };
+    onProgress?.({ percent: 100 });
+    onSuccess?.(uploadResult, file);
+  } catch (error) {
+    onError?.(error instanceof Error ? error : new Error(String(error)));
+  }
+}
+
+export { getAdImageList, upDataAdImage, uploadFile };

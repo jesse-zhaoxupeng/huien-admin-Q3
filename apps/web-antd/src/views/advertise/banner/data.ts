@@ -4,7 +4,10 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
 import type { AdImageApi } from '#/api';
 
+import { h } from 'vue';
+
 import { z } from '#/adapter/form';
+import { uploadFile } from '#/api';
 import { $t } from '#/locales';
 /**
  * 获取编辑表单的字段配置。如果没有使用多语言，可以直接export一个数组常量
@@ -14,6 +17,7 @@ export function useSchema(): VbenFormSchema[] {
     {
       component: 'Input',
       fieldName: 'name',
+      labelWidth: 120,
       label: '图片名称',
       rules: z
         .string()
@@ -21,56 +25,124 @@ export function useSchema(): VbenFormSchema[] {
         .max(30, $t('ui.formRules.maxLength', ['图片名称', 30])),
     },
     {
-      component: 'Upload',
-      fieldName: 'imageUrl', // ⚠️ 最终提交时的字段名
-      label: '上传图片',
-      // componentProps: {
-      //   api: async (file: File) => {
-      //     try {
-      //       const res = await upDataAdImage(file);
-      //       return {
-      //         url: res.data.url,
-      //         name: file.name,
-      //       };
-      //     } catch {
-      //       throw new Error('上传失败，请重试');
-      //     }
-      //   },
-      //   maxNumber: 1, // 只允许上传1张
-      //   accept: 'image/*', // 只允许图片
-      // },
-      // rules: z.any().refine(
-      //   (value) => {
-      //     return value && typeof value === 'object' && value.url;
-      //   },
-      //   {
-      //     message: '请上传封面图片',
-      //   },
-      // ),
+      component: 'RadioGroup',
+      componentProps: {
+        options: [
+          {
+            label: '系统内文章',
+            value: '1',
+          },
+          {
+            label: '外链',
+            value: '2',
+          },
+        ],
+      },
+      fieldName: 'linkType',
+      labelWidth: 120,
+      label: '跳转类型',
+      rules: z
+        .string()
+        .refine(
+          (val) => val !== undefined && val !== null && val.trim() !== '',
+          {
+            message: $t('ui.formRules.selectRequired', ['跳转目标']), // 或自定义提示
+          },
+        ),
     },
-    // {
-    //   component: 'Input',
-    //   fieldName: 'name',
-    //   label: '图片名称',
-    //   rules: z
-    //     .string()
-    //     .min(2, $t('ui.formRules.minLength', ['图片名称', 2]))
-    //     .max(30, $t('ui.formRules.maxLength', ['图片名称', 30])),
-    // },
-    // {
-    //   component: 'Textarea',
-    //   componentProps: {
-    //     maxLength: 50,
-    //     rows: 3,
-    //     showCount: true,
-    //   },
-    //   fieldName: 'remark',
-    //   label: $t('system.dept.remark'),
-    //   rules: z
-    //     .string()
-    //     .max(50, $t('ui.formRules.maxLength', [$t('system.dept.remark'), 50]))
-    //     .optional(),
-    // },
+    {
+      component: 'Input',
+      help: () => ['存储文章id'].map((v) => h('p', v)),
+      fieldName: 'linkData',
+      labelWidth: 120,
+      label: '跳转目标',
+      rules: z
+        .string()
+        .refine(
+          (val) => val !== undefined && val !== null && val.trim() !== '',
+          {
+            message: $t('ui.formRules.required', ['跳转目标']), // 或自定义提示
+          },
+        ),
+    },
+    {
+      component: 'InputNumber',
+      fieldName: 'sequenceNo',
+      labelWidth: 120,
+      label: '图片序号',
+      rules: 'required',
+      componentProps: {
+        class: 'w-full',
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'description',
+      labelWidth: 120,
+      label: '图片描述',
+    },
+    {
+      component: 'Input',
+      labelWidth: 120,
+      componentProps: {
+        disabled: true,
+      },
+      dependencies: {
+        // trigger(values, form) {
+        //   // console.log(values, form);
+        //   // form.setFieldValue('field2', values.field1);
+        // },
+        // 只有指定的字段改变时，才会触发
+        triggerFields: ['files'],
+      },
+      fieldName: 'category',
+      label: '图片类型',
+    },
+    {
+      component: 'Upload',
+      componentProps: {
+        accept: '.png,.jpg,.jpeg',
+
+        // 自动携带认证信息
+        customRequest: uploadFile,
+        disabled: false,
+        maxCount: 1,
+        multiple: false,
+        showUploadList: true,
+        // 上传列表的内建样式，支持四种基本样式 text, picture, picture-card 和 picture-circle
+        listType: 'picture-card',
+      },
+      fieldName: 'files',
+      labelWidth: 120,
+      label: '上传图片',
+      formItemClass: 'items-start',
+      renderComponentContent: () => {
+        return {
+          default: () => '点击上传图片',
+        };
+      },
+      rules: z.any().refine(
+        (val) => val?.length > 0 && val[0]?.response?.url, // 确保有 url 字段
+        { message: '请上传图片' },
+      ),
+    },
+    {
+      component: 'Textarea',
+      componentProps: {
+        class: 'w-full',
+        maxLength: 50,
+        rows: 3,
+        showCount: true,
+      },
+      fieldName: 'remark',
+      labelWidth: 120,
+      formItemClass: 'col-span-2 items-start',
+      label: '备注',
+      rules: z
+        .string()
+        .max(50, $t('ui.formRules.maxLength', ['备注', 50]))
+        .optional(),
+    },
   ];
 }
 

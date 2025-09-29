@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { IndicationsApi } from '#/api/indications';
+import type { AdImageApi } from '#/api';
 
 import { computed, ref } from 'vue';
 
@@ -8,22 +8,22 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createHospital, updateHospital } from '#/api';
 import { $t } from '#/locales';
 
 import { useSchema } from '../data';
 
-const emit = defineEmits(['success']);
-const formData = ref<IndicationsApi.Indication>();
+// const emit = defineEmits(['success']);
+const formData = ref<AdImageApi.AdImage>();
 const getTitle = computed(() => {
   return formData.value?.id
-    ? $t('ui.actionTitle.edit', ['医院'])
-    : $t('ui.actionTitle.create', ['医院']);
+    ? $t('ui.actionTitle.edit', ['广告图'])
+    : $t('ui.actionTitle.create', ['广告图']);
 });
 
 const [Form, formApi] = useVbenForm({
-  layout: 'vertical',
+  layout: 'horizontal',
   schema: useSchema(),
+  wrapperClass: 'grid-cols-2',
   showDefaultActions: false,
 });
 
@@ -33,21 +33,24 @@ function resetForm() {
 }
 
 const [Modal, modalApi] = useVbenModal({
+  class: 'w-[800px]',
   async onConfirm() {
     const { valid } = await formApi.validate();
     if (valid) {
-      modalApi.lock();
-      const data = await formApi.getValues();
-      // console.log('updateHospital =>', data);
-      try {
-        await (formData.value?.id
-          ? updateHospital(formData.value.id, data)
-          : createHospital(data));
-        modalApi.close();
-        emit('success');
-      } finally {
-        modalApi.lock(false);
-      }
+      // console.log(formData.value);
+      // modalApi.lock();
+      // const data = await formApi.getValues();
+      //  data.files[0].response
+      // // console.log('updateHospital =>', data);
+      // try {
+      //   await (formData.value?.id
+      //     ? updateHospital(formData.value.id, data)
+      //     : createHospital(data));
+      //   modalApi.close();
+      //   emit('success');
+      // } finally {
+      //   modalApi.lock(false);
+      // }
     }
   },
   onOpenChange(isOpen) {
