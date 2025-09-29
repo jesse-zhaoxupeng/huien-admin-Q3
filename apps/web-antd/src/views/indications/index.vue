@@ -45,9 +45,8 @@ const formOptions: VbenFormProps = {
         allowClear: true,
         immediate: true,
         api: async () => {
-          const res = await getDictionariesList({ dict_type: 'project_type' });
-
-          return res.data;
+          const res = await getDictionariesList({ dictType: 'project_type' });
+          return res;
         },
         class: 'w-full',
         labelField: 'label',
@@ -86,8 +85,6 @@ const formOptions: VbenFormProps = {
  * @param row
  */
 function onEdit(row: IndicationsApi.Indication) {
-  console.info('edit 删除处理逻辑', row);
-  console.info('formModalApi', formModalApi);
   formModalApi.setData(row).open();
   // formModalApi.setData(row).open();
 }
@@ -103,10 +100,10 @@ function onCreate() {
  * 删除
  */
 const onDelete = async (row) => {
-  const res = await deleteIndication(row.id);
-
-  gridApi.formApi.submitForm();
-  message.success(`${row.name} 删除成功`);
+  deleteIndication(row.id).then(() => {
+    gridApi.formApi.submitForm();
+    message.success(`${row.name} 删除成功`);
+  });
 };
 
 /**
@@ -151,10 +148,9 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           pageSize: page.pageSize,
           ...formValues,
         });
-
         return {
-          items: res.data,
-          total: res.total,
+          items: res.list,
+          total: res.totalRecords,
         };
       },
     },

@@ -84,9 +84,10 @@ async function updateProjectOpenHospital(
  * 获取适应症列表数据
  */
 async function getProjectsList(params: ProjectsApi.PageFetchParams) {
-  return requestClient.get<Array<ProjectsApi.Project>>('/project', {
+  return requestClient.post<Array<ProjectsApi.Project>>(
+    '/project/page',
     params,
-  });
+  );
 }
 
 /**

@@ -38,9 +38,10 @@ async function exportParticipantsList(params: ParticipantsApi.PageFetchParams) {
  * 获取适应症列表数据
  */
 async function getParticipantsList(params: ParticipantsApi.PageFetchParams) {
-  return requestClient.get<Array<ParticipantsApi.Participant>>('/participant', {
+  return requestClient.post<Array<ParticipantsApi.Participant>>(
+    '/participant/page',
     params,
-  });
+  );
 }
 
 /**

@@ -23,9 +23,10 @@ export namespace HospitalsApi {
  * 获取适应症列表数据
  */
 async function getHospitalsList(params: HospitalsApi.PageFetchParams) {
-  return requestClient.get<Array<HospitalsApi.Hospital>>('/hospital', {
+  return requestClient.post<Array<HospitalsApi.Hospital>>(
+    '/hospital/page',
     params,
-  });
+  );
 }
 
 /**

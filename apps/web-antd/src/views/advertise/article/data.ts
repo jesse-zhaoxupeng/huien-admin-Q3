@@ -2,13 +2,11 @@ import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
 
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
-import type { IndicationsApi } from '#/api/indications';
+import type { HospitalsApi } from '#/api';
 
 import { z } from '#/adapter/form';
-import { getDictionariesList } from '#/api';
+import { getCitysList } from '#/api';
 import { $t } from '#/locales';
-
-//
 
 /**
  * 获取编辑表单的字段配置。如果没有使用多语言，可以直接export一个数组常量
@@ -18,30 +16,33 @@ export function useSchema(): VbenFormSchema[] {
     {
       component: 'Input',
       fieldName: 'name',
-      label: '适应症名称',
+      label: '医院名称',
       rules: z
         .string()
-        .min(2, $t('ui.formRules.minLength', ['适应症名称', 2]))
-        .max(20, $t('ui.formRules.maxLength', ['适应症名称', 20])),
+        .min(2, $t('ui.formRules.minLength', ['医院名称', 2]))
+        .max(30, $t('ui.formRules.maxLength', ['医院名称', 30])),
     },
 
     {
-      component: 'ApiSelect',
+      component: 'ApiCascader',
       componentProps: {
         allowClear: true,
         immediate: true,
         api: async () => {
-          const res = await getDictionariesList({ dictType: 'project_type' });
-          return res;
+          return await getCitysList({ isShowTree: '1' });
         },
         class: 'w-full',
-        labelField: 'label',
-        valueField: 'value',
+        fieldNames: {
+          label: 'cityname',
+          value: 'id',
+          children: 'children',
+        },
+
         placeholder: '全部',
         showSearch: true,
       },
-      fieldName: 'project_type',
-      label: '项目类型',
+      fieldName: 'area_ids',
+      label: '所属城市',
     },
 
     {
@@ -49,8 +50,8 @@ export function useSchema(): VbenFormSchema[] {
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: $t('common.enabled'), value: 1 },
-          { label: $t('common.disabled'), value: 0 },
+          { label: '启用', value: '0' },
+          { label: '禁用', value: '1' },
         ],
         optionType: 'button',
       },
@@ -81,45 +82,46 @@ export function useSchema(): VbenFormSchema[] {
  * @param onActionClick 表格操作按钮点击事件
  */
 export function useColumns(
-  onActionClick?: OnActionClickFn<IndicationsApi.Indication>,
-): VxeTableGridOptions<IndicationsApi.Indication>['columns'] {
+  onActionClick?: OnActionClickFn<HospitalsApi.Hospital>,
+): VxeTableGridOptions<HospitalsApi.Hospital>['columns'] {
   return [
     { title: '序号', type: 'seq', width: 50, fixed: 'left' },
     {
       align: 'left',
       field: 'name',
       fixed: 'left',
-      title: $t('projects.indications.lists.columns.name'),
+      title: '医院名称',
       treeNode: true,
-      width: 200,
+      width: 360,
     },
 
     {
-      field: 'projectTypeName',
-      title: '项目类型',
-      width: 100,
+      field: 'city.cityname',
+      title: '所属城市',
+      fixed: 'left',
+      width: 80,
     },
 
     {
-      field: 'createTime',
+      field: 'create_time',
       title: $t('system.dept.createTime'),
-      width: 230,
+      width: 180,
     },
     {
       field: 'update_time',
       title: '更新时间',
-      width: 230,
+      width: 180,
     },
-    // {
-    //   field: 'remark',
-    //   minWidth: 100,
-    //   title: '备注',
-    // },
+    {
+      field: 'remark',
+      title: '备注',
+      width: 180,
+    },
 
     {
-      cellRender: { name: 'CellStatusTag' },
+      cellRender: { name: 'CellHospitalStatusTag' },
       field: 'status',
-      minWidth: 60,
+      minWidth: 100,
       fixed: 'right',
       title: $t('system.dept.status'),
     },
@@ -129,7 +131,7 @@ export function useColumns(
       cellRender: {
         attrs: {
           nameField: 'productName',
-          nameTitle: '适应症',
+          nameTitle: '医院',
           onClick: onActionClick,
         },
         name: 'CellOperation',
@@ -137,7 +139,7 @@ export function useColumns(
           'edit', // 默认的编辑按钮
           {
             code: 'delete', // 默认的删除按钮
-            disabled: (row: IndicationsApi.Indication) => {
+            disabled: (row: HospitalsApi.Hospital) => {
               return !!(row.children && row.children.length > 0);
             },
           },

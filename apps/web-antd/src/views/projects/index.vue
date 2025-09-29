@@ -56,9 +56,8 @@ const formOptions: VbenFormProps = {
         allowClear: true,
         immediate: true,
         api: async () => {
-          const res = await getDictionariesList({ dict_type: 'project_type' });
-
-          return res.data;
+          const res = await getDictionariesList({ dictType: 'project_type' });
+          return res;
         },
         class: 'w-full',
         labelField: 'label',
@@ -105,8 +104,7 @@ const formOptions: VbenFormProps = {
         immediate: true,
         api: async () => {
           const res = await getIndicationsList({ page: 1, pageSize: 100 });
-
-          return res.data;
+          return res.list;
         },
         class: 'w-full',
         labelField: 'name',
@@ -189,18 +187,18 @@ const onDelete = async (row) => {
  * 停止招募
  */
 const onStop = async (row) => {
-  let willStatus = '1';  // 默认转为"正在招募"
-  
+  let willStatus = '1'; // 默认转为"正在招募"
+
   if (row.status === '0') {
-    willStatus = '1';  // 等待招募->正在招募
+    willStatus = '1'; // 等待招募->正在招募
   }
   if (row.status === '1') {
-    willStatus = '2';  // 正在招募->停止招募
-  } 
-  if (row.status === '2') {
-    willStatus = '1';  // 停止招募->正在招募
+    willStatus = '2'; // 正在招募->停止招募
   }
-  
+  if (row.status === '2') {
+    willStatus = '1'; // 停止招募->正在招募
+  }
+
   const updateParams = {
     status: willStatus,
   };
@@ -273,15 +271,9 @@ function onActionClick({
 
 const gridOptions: VxeTableGridOptions<RowType> = {
   gridEvents: {
-    mounted: () => {
-      console.log('表格已挂载');
-    },
-    'checkbox-change': () => {
-      console.log('复选框状态变化');
-    },
-    'checkbox-all': () => {
-      console.log('全选复选框状态变化');
-    },
+    mounted: () => {},
+    'checkbox-change': () => {},
+    'checkbox-all': () => {},
   },
   checkboxConfig: {
     highlight: true,
@@ -307,38 +299,42 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           ...formValues,
         });
 
-        console.log('原始API响应:', res);
-        
         // 检查API响应格式
         if (!res.list) {
-          console.error('API响应中没有list字段:', res);
+          // console.error('API响应中没有list字段:', res);
           return { items: [], total: 0 };
         }
-        
+
         // 保持原始字段名称，仅添加表格需要的额外字段
-        const transformedData = res.list.map(item => {
-          console.log('处理项目:', item.projectName, '原始状态:', item.status);
-          
-          // 简化数据转换，只添加必要字段
-          return {
-            ...item,
-            // 只添加必须的嵌套对象
-            type: { label: item.projectTypeName || '', value: item.projectType },
-            stage: { label: item.projectStageName || '', value: item.projectStage },
-            // 状态ID映射（必需）
-            statusId: mapStatusId(item.status),
-          };
-        });
-        
-        console.log('转换后数据第一项:', transformedData[0]);
-        
+        const transformedData: [] =
+          res.list.map((item) => {
+            // 简化数据转换，只添加必要字段
+            return {
+              ...item,
+              // 只添加必须的嵌套对象
+              type: {
+                label: item.projectTypeName || '',
+                value: item.projectType,
+              },
+              stage: {
+                label: item.projectStageName || '',
+                value: item.projectStage,
+              },
+              // 状态ID映射（必需）
+              statusId: mapStatusId(item.status),
+            };
+          }) || [];
+
         // 确保返回正确的数据结构
         const result = {
           items: transformedData,
-          total: res.total || transformedData.length,
+          total:
+            res.totalRecords ||
+            (transformedData && transformedData.length > 0
+              ? transformedData.length
+              : 0),
         };
-        
-        console.log('返回给表格的数据结构:', result);
+
         return result;
       },
     },
@@ -354,9 +350,9 @@ const gridOptions: VxeTableGridOptions<RowType> = {
 // 状态ID映射函数
 function mapStatusId(status) {
   const statusMap = {
-    "0": "206628493037797903357", // 等待招募
-    "1": "206628519472642133136", // 正在招募
-    "2": "206628562022253305061"  // 停止招募
+    '0': '206628493037797903357', // 等待招募
+    '1': '206628519472642133136', // 正在招募
+    '2': '206628562022253305061', // 停止招募
   };
   return statusMap[status] || status;
 }

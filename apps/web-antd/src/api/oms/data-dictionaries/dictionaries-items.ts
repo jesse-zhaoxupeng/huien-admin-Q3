@@ -25,7 +25,7 @@ export namespace DataDictionariesItemsApi {
 async function getDataDictionariesItemList(
   params: DataDictionariesItemsApi.PageFetchParams,
 ) {
-  return requestClient.get<Array<DataDictionariesItemsApi.DataDictionaryItem>>(
+  return requestClient.post<Array<DataDictionariesItemsApi.DataDictionaryItem>>(
     'oms/dataDictionariesItems',
     {
       params,

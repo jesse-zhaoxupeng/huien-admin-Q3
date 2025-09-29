@@ -25,8 +25,6 @@ interface RowType {
   releaseDate: string;
 }
 
-console.info('Form', Form);
-
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
   destroyOnClose: true,
@@ -91,8 +89,6 @@ const formOptions: VbenFormProps = {
  * @param row
  */
 function onEdit(row: AdminsApi.Indication) {
-  console.info('edit 删除处理逻辑', row);
-  console.info('formModalApi', formModalApi);
   formModalApi.setData(row).open();
   // formModalApi.setData(row).open();
 }
@@ -108,10 +104,10 @@ function onCreate() {
  * 删除
  */
 const onDelete = async (row) => {
-  const res = await deleteAdmin(row.id);
-  console.info('res', res);
-  gridApi.formApi.submitForm();
-  message.success(`${row.name} 删除成功`);
+  deleteAdmin(row.id).then(() => {
+    gridApi.formApi.submitForm();
+    message.success(`${row.name} 删除成功`);
+  });
 };
 
 // deleteCity
@@ -158,8 +154,8 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         });
 
         return {
-          items: res.data,
-          total: res.total,
+          items: res.list,
+          total: res.totalRecords,
         };
       },
     },

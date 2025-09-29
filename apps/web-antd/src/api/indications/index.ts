@@ -23,11 +23,9 @@ export namespace IndicationsApi {
  * 获取适应症列表数据
  */
 async function getIndicationsList(params: IndicationsApi.PageFetchParams) {
-  return requestClient.get<Array<IndicationsApi.Indication>>(
+  return requestClient.post<Array<IndicationsApi.Indication>>(
     '/indication/page',
-    {
-      params,
-    },
+    params,
   );
 }
 

@@ -23,9 +23,7 @@ export namespace AdminsApi {
  * 获取适应症列表数据
  */
 async function getAdminsList(params: AdminsApi.PageFetchParams) {
-  return requestClient.get<Array<AdminsApi.Admin>>('/admins', {
-    params,
-  });
+  return requestClient.post<Array<AdminsApi.Admin>>('/sysUser/page', params);
 }
 
 /**

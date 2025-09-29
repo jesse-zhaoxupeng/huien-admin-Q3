@@ -77,9 +77,8 @@ const formOptions: VbenFormProps = {
         allowClear: true,
         immediate: true,
         api: async () => {
-          const res = await getDictionariesList({ dict_type: 'project_type' });
-
-          return res.data;
+          const res = await getDictionariesList({ dictType: 'project_type' });
+          return res;
         },
         class: 'w-full',
         labelField: 'label',
@@ -100,8 +99,7 @@ const formOptions: VbenFormProps = {
         immediate: true,
         api: async () => {
           const res = await getIndicationsList({ page: 1, pageSize: 100 });
-
-          return res.data;
+          return res.list;
         },
         class: 'w-full',
         labelField: 'name',
@@ -158,10 +156,10 @@ const formOptions: VbenFormProps = {
         immediate: true,
         api: async () => {
           const res = await getDictionariesList({
-            dict_type: 'gender_requirement',
+            dictType: 'gender_requirement',
           });
 
-          return res.data;
+          return res;
         },
         class: 'w-full',
         labelField: 'label',
@@ -169,7 +167,7 @@ const formOptions: VbenFormProps = {
         placeholder: '全部',
         showSearch: true,
       },
-      fieldName: 'gender',
+      fieldName: 'label',
       label: '人员性别',
 
       labelWidth: 60,
@@ -194,20 +192,22 @@ const formOptions: VbenFormProps = {
         api: async () => {
           const res = await getProjectsList({
             is_deleted: '0',
+            page: 1,
+            pageSize: 1000,
           });
 
-          return res.data;
+          return res.list;
         },
         class: 'w-full',
 
-        fieldNames: { label: 'project_name', value: 'id' },
+        fieldNames: { label: 'projectName', value: 'id' },
         placeholder: '报名项目',
         showSearch: true,
         filterOption: (input: string, option: any) => {
-          return option.project_name.includes(input);
+          return option.projectName.includes(input);
         },
         onChange: (value, option) => {
-          loadAppliesByProjectId(option?.project_name);
+          loadAppliesByProjectId(option?.projectName);
         },
       },
       fieldName: 'project_id',
@@ -255,9 +255,9 @@ function onEdit(row: ParticipantsApi.Indication) {
 /**
  * 创建新部门
  */
-function onCreate() {
-  formModalApi.setData(null).open();
-}
+// function onCreate() {
+//   formModalApi.setData(null).open();
+// }
 
 const onDetail = (row) => {
   mode.value = 'detail';
@@ -283,7 +283,7 @@ function onActionClick({
     }
     case 'delete': {
       // onDelete(row);
-      console.info('delete', row);
+      // console.info('delete', row);
       break;
     }
     case 'detail': {
@@ -321,8 +321,8 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         });
 
         return {
-          items: res.data,
-          total: res.total,
+          items: res.list,
+          total: res.totalRecords,
         };
       },
     },
@@ -469,7 +469,7 @@ const currentAuditStatus = ref('9199999');
 const onSegmentedChange = (value: string) => {
   // console.info('onSegmentedChange', value);
   // console.info('onSegmentedChange gridApi', gridApi.formApi.submit());
-  console.info('gridApi.formApi =>', gridApi.formApi);
+  // console.info('gridApi.formApi =>', gridApi.formApi);
   gridApi.formApi.setFieldValue('status', value);
   // gridApi.formApi.submitForm();
   // formApi.submit();

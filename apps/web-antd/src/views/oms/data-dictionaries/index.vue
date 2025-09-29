@@ -45,7 +45,6 @@ const { copy } = useClipboard({ legacy: true });
 
 const getTreeData = async () => {
   const res = await getDataDictionariesList({});
-  console.log(res);
   dataDictionariesTree.value = res;
 };
 
@@ -53,7 +52,6 @@ getTreeData();
 
 const onDataDictionarySelect = (selectedKeys: string[], { node }) => {
   currentSelectDataDictionary.value = node.dataRef;
-  console.info(gridApi.formApi, currentSelectDataDictionary.value);
 
   gridApi.formApi.setFieldValue(
     'data_dictionary_id',
@@ -105,9 +103,8 @@ const formOptions: VbenFormProps = {
         allowClear: true,
         immediate: true,
         api: async () => {
-          const res = await getDictionariesList({ dict_type: 'project_type' });
-
-          return res.data;
+          const res = await getDictionariesList({ dictType: 'project_type' });
+          return res;
         },
         class: 'w-full',
         labelField: 'label',
@@ -182,9 +179,6 @@ const onDtaDictionaryFormSuccess = () => {
  * @param row
  */
 function onEdit(row: IndicationsApi.Indication) {
-  console.info('edit 删除处理逻辑', row);
-  console.info('formModalApi', formModalApi);
-
   // row.data_dictionary_names = [...new Set(row.data_dictionary_names)];
   // row.data_dictionary_ids = [...new Set(row.data_dictionary_ids)];
   formModalApi.setData(row).open();
@@ -223,8 +217,6 @@ function onCreate() {
     data.data_dictionary_ids.push(data.data_dictionary_id);
   }
 
-  console.info('data.data_dictionary_names =>', data.data_dictionary_names);
-
   if (
     data.data_dictionary_names.length === 0 &&
     currentSelectDataDictionary.value.name
@@ -244,10 +236,10 @@ function onCreate() {
  * 删除
  */
 const onDelete = async (row) => {
-  const res = await deleteIndication(row.id);
-
-  gridApi.formApi.submitForm();
-  message.success(`${row.name} 删除成功`);
+  deleteIndication(row.id).then(() => {
+    gridApi.formApi.submitForm();
+    message.success(`${row.name} 删除成功`);
+  });
 };
 
 /**
@@ -290,7 +282,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           pageSize: page.pageSize,
           ...formValues,
         });
-        console.log('getDataDictionariesItemList', res);
 
         return {
           items: res,
@@ -356,7 +347,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
             title: 'name',
             key: 'id',
           }"
-          checkable
           :tree-data="dataDictionariesTree"
         >
           <template #title="item">

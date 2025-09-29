@@ -25,11 +25,9 @@ export namespace DataDictionariesApi {
 async function getDataDictionariesList(
   params: DataDictionariesApi.PageFetchParams,
 ) {
-  return requestClient.get<Array<DataDictionariesApi.DataDictionary>>(
+  return requestClient.post<Array<DataDictionariesApi.DataDictionary>>(
     'oms/dataDictionaries',
-    {
-      params,
-    },
+    params,
   );
 }
 

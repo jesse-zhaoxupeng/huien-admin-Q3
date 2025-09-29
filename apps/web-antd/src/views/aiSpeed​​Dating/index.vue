@@ -69,7 +69,7 @@ const formOptions: VbenFormProps = {
         placeholder: '按 医院名称 搜索',
       },
       // 字段名
-      fieldName: 'name',
+      fieldName: 'keywords',
       // 界面显示的label
       label: '搜索',
       labelWidth: 60,
@@ -108,6 +108,7 @@ const onDelete = async (row) => {
     gridApi.formApi.submitForm();
     message.success(`${row.name} 删除成功`);
   });
+  // console.info('res', res);
 };
 
 // deleteCity
@@ -154,7 +155,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         });
 
         return {
-          items: res,
+          items: res.data,
           total: res.total,
         };
       },
@@ -177,7 +178,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 <template>
   <Page auto-content-height>
     <FormModal />
-    <Grid table-title="医院列表">
+    <Grid table-title="AI速配列表">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate"> 新增 </Button>
       </template>

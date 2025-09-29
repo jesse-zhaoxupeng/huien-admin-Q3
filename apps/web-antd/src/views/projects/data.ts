@@ -60,18 +60,15 @@ export function useSchema(): VbenFormSchema[] {
         allowClear: true,
         immediate: true,
         api: async () => {
-          const res = await getDictionariesList({ dict_type: 'project_type' });
-
-          return res.data;
+          const res = await getDictionariesList({ dictType: 'project_type' });
+          return res;
         },
         class: 'w-full',
         labelField: 'label',
         valueField: 'value',
         placeholder: '全部',
         showSearch: true,
-        onChange: (value) => {
-          console.log('value', value);
-
+        onChange: () => {
           // formApi?.setFieldValue('project_stage', '');
         },
       },
@@ -196,8 +193,7 @@ export function useSchema(): VbenFormSchema[] {
         immediate: true,
         api: async () => {
           const res = await getIndicationsList({ page: 1, pageSize: 100 });
-
-          return res.data;
+          return res.list;
         },
         class: 'w-full',
         labelField: 'name',
@@ -267,9 +263,7 @@ export function useSchema(): VbenFormSchema[] {
         valueField: 'id',
         placeholder: '请选择 招募状态',
         showSearch: true,
-        onChange: (value) => {
-          console.log('value', value);
-
+        onChange: () => {
           // formApi?.setFieldValue('projectStage', '');
         },
       },
@@ -622,7 +616,6 @@ export function useOpenHospitalSchema(): VbenFormSchema[] {
         immediate: true,
         api: async () => {
           const res = await getDictionariesList({ dictType: 'projectType' });
-
           return res.data;
         },
         class: 'w-full',
@@ -630,9 +623,7 @@ export function useOpenHospitalSchema(): VbenFormSchema[] {
         valueField: 'value',
         placeholder: '全部',
         showSearch: true,
-        onChange: (value) => {
-          console.log('value', value);
-
+        onChange: () => {
           // formApi?.setFieldValue('projectStage', '');
         },
       },
@@ -667,12 +658,12 @@ export function useOpenHospitalSchema(): VbenFormSchema[] {
   ];
 }
 
-// 状态ID映射函数
-const mapStatusToId = (status) => {
-  const statusMap = {
-    '0': '206628493037797903357', // 等待招募
-    '1': '206628519472642133136', // 正在招募
-    '2': '206628562022253305061'  // 停止招募
-  };
-  return statusMap[status] || status;
-};
+// // 状态ID映射函数
+// const mapStatusToId = (status) => {
+//   const statusMap = {
+//     '0': '206628493037797903357', // 等待招募
+//     '1': '206628519472642133136', // 正在招募
+//     '2': '206628562022253305061', // 停止招募
+//   };
+//   return statusMap[status] || status;
+// };

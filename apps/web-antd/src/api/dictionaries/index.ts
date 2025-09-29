@@ -23,9 +23,12 @@ export namespace DictionariesApi {
  * 获取适应症列表数据
  */
 async function getDictionariesList(params: DictionariesApi.PageFetchParams) {
-  return requestClient.get<Array<DictionariesApi.Dictionary>>('/dictionaries', {
-    params,
-  });
+  return requestClient.get<Array<DictionariesApi.Dictionary>>(
+    '/sysDictData/getByDictType',
+    {
+      params,
+    },
+  );
 }
 
 /**
