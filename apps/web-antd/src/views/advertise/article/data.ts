@@ -2,12 +2,13 @@ import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
 
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
-import type { HospitalsApi } from '#/api';
+import type { ArticleApi } from '#/api';
+
+import { h } from 'vue';
 
 import { z } from '#/adapter/form';
-import { getCitysList } from '#/api';
+import { uploadFile } from '#/api';
 import { $t } from '#/locales';
-
 /**
  * 获取编辑表单的字段配置。如果没有使用多语言，可以直接export一个数组常量
  */
@@ -16,63 +17,138 @@ export function useSchema(): VbenFormSchema[] {
     {
       component: 'Input',
       fieldName: 'name',
-      label: '医院名称',
+      labelWidth: 120,
+      label: '图片名称',
       rules: z
         .string()
-        .min(2, $t('ui.formRules.minLength', ['医院名称', 2]))
-        .max(30, $t('ui.formRules.maxLength', ['医院名称', 30])),
+        .min(2, $t('ui.formRules.minLength', ['图片名称', 2]))
+        .max(30, $t('ui.formRules.maxLength', ['图片名称', 30])),
     },
-
-    {
-      component: 'ApiCascader',
-      componentProps: {
-        allowClear: true,
-        immediate: true,
-        api: async () => {
-          return await getCitysList({ isShowTree: '1' });
-        },
-        class: 'w-full',
-        fieldNames: {
-          label: 'cityname',
-          value: 'id',
-          children: 'children',
-        },
-
-        placeholder: '全部',
-        showSearch: true,
-      },
-      fieldName: 'area_ids',
-      label: '所属城市',
-    },
-
     {
       component: 'RadioGroup',
       componentProps: {
-        buttonStyle: 'solid',
         options: [
-          { label: '启用', value: '0' },
-          { label: '禁用', value: '1' },
+          {
+            label: '系统内文章',
+            value: 1,
+          },
+          {
+            label: '外链',
+            value: 2,
+          },
         ],
-        optionType: 'button',
       },
       defaultValue: 1,
-      fieldName: 'status',
-      label: $t('system.dept.status'),
+      fieldName: 'linkType',
+      labelWidth: 120,
+      label: '跳转类型',
+      rules: z
+        .number()
+        .refine((val) => val !== undefined && val !== null && val > 0, {
+          message: $t('ui.formRules.selectRequired', ['跳转目标']), // 或自定义提示
+        }),
     },
-    // {
-    //   component: 'Textarea',
-    //   componentProps: {
-    //     maxLength: 50,
-    //     rows: 3,
-    //     showCount: true,
-    //   },
-    //   fieldName: 'remark',
-    //   label: $t('system.dept.remark'),
-    //   rules: z
-    //     .string()
-    //     .max(50, $t('ui.formRules.maxLength', [$t('system.dept.remark'), 50]))
-    //     .optional(),
-    // },
+    {
+      component: 'Input',
+      help: () =>
+        ['小程序跳转内部是需要填写文章ID，外链时候需要填写完整外链地址'].map(
+          (v) => h('p', v),
+        ),
+      fieldName: 'linkData',
+      labelWidth: 120,
+      label: '跳转目标',
+      rules: z
+        .string()
+        .refine(
+          (val) => val !== undefined && val !== null && val.trim() !== '',
+          {
+            message: $t('ui.formRules.required', ['跳转目标']), // 或自定义提示
+          },
+        ),
+    },
+    {
+      component: 'InputNumber',
+      fieldName: 'sequenceNo',
+      labelWidth: 120,
+      label: '图片序号',
+      rules: 'required',
+      componentProps: {
+        class: 'w-full',
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'description',
+      labelWidth: 120,
+      label: '图片描述',
+    },
+    {
+      component: 'Input',
+      labelWidth: 120,
+      componentProps: {
+        disabled: true,
+      },
+      dependencies: {
+        trigger(values, form) {
+          if (values.files) {
+            const type =
+              values.files[0].type.split('/')[
+                values.files[0].type.split('/').length - 1
+              ];
+            form.setFieldValue('category', type);
+          }
+        },
+        // 只有指定的字段改变时，才会触发
+        triggerFields: ['files'],
+      },
+      fieldName: 'category',
+      label: '图片类型',
+    },
+    {
+      component: 'Upload',
+      componentProps: {
+        accept: '.png,.jpg,.jpeg',
+
+        // 自动携带认证信息
+        customRequest: uploadFile,
+        disabled: false,
+        maxCount: 1,
+        multiple: false,
+        showUploadList: true,
+        // 上传列表的内建样式，支持四种基本样式 text, picture, picture-card 和 picture-circle
+        listType: 'picture-card',
+      },
+      fieldName: 'files',
+      labelWidth: 120,
+      label: '上传图片',
+      formItemClass: 'items-start',
+      renderComponentContent: () => {
+        return {
+          default: () => '点击上传图片',
+        };
+      },
+      rules: z.any().refine(
+        (val) => val?.length > 0 && val[0]?.response?.url, // 确保有 url 字段
+        { message: '请上传图片' },
+      ),
+    },
+    {
+      component: 'Textarea',
+      componentProps: {
+        class: 'w-full',
+        maxLength: 300,
+        rows: 3,
+        showCount: true,
+      },
+      fieldName: 'comment',
+      labelWidth: 120,
+      formItemClass: 'col-span-2 items-start',
+      label: '备注',
+      rules: z
+        .string()
+        .max(300, $t('ui.formRules.maxLength', ['备注', 300]))
+        .optional(),
+    },
   ];
 }
 
@@ -82,56 +158,70 @@ export function useSchema(): VbenFormSchema[] {
  * @param onActionClick 表格操作按钮点击事件
  */
 export function useColumns(
-  onActionClick?: OnActionClickFn<HospitalsApi.Hospital>,
-): VxeTableGridOptions<HospitalsApi.Hospital>['columns'] {
+  onActionClick?: OnActionClickFn<ArticleApi.Article>,
+): VxeTableGridOptions<ArticleApi.Article>['columns'] {
   return [
     { title: '序号', type: 'seq', width: 50, fixed: 'left' },
+
     {
       align: 'left',
       field: 'name',
       fixed: 'left',
-      title: '医院名称',
+      title: '图片名称',
       treeNode: true,
       width: 360,
     },
-
     {
-      field: 'city.cityname',
-      title: '所属城市',
+      field: 'id',
       fixed: 'left',
-      width: 80,
+      title: '图片ID',
+    },
+    {
+      field: 'url',
+      title: '图片url',
+      fixed: 'left',
     },
 
     {
-      field: 'create_time',
-      title: $t('system.dept.createTime'),
+      field: 'category',
+      title: '图片类型',
       width: 180,
     },
     {
-      field: 'update_time',
-      title: '更新时间',
+      field: 'linkType',
+      title: '跳转类型',
+      width: 180,
+      formatter: ({ row }) => {
+        switch (row.linkType) {
+          case 1: {
+            return '系统内文章';
+          }
+          case 2: {
+            return '外链';
+          }
+        }
+        return '';
+      },
+    },
+    {
+      field: 'linkData',
+      title: '跳转目标',
       width: 180,
     },
     {
-      field: 'remark',
+      field: 'description',
+      title: '图片描述',
+    },
+    {
+      field: 'comment',
       title: '备注',
-      width: 180,
     },
-
-    {
-      cellRender: { name: 'CellHospitalStatusTag' },
-      field: 'status',
-      minWidth: 100,
-      fixed: 'right',
-      title: $t('system.dept.status'),
-    },
-
     {
       align: 'right',
       cellRender: {
         attrs: {
           nameField: 'productName',
-          nameTitle: '医院',
+          nameTitle: '广告图',
           onClick: onActionClick,
         },
         name: 'CellOperation',
@@ -139,7 +229,7 @@ export function useColumns(
           'edit', // 默认的编辑按钮
           {
             code: 'delete', // 默认的删除按钮
-            disabled: (row: HospitalsApi.Hospital) => {
+            disabled: (row: ArticleApi.Article) => {
               return !!(row.children && row.children.length > 0);
             },
           },

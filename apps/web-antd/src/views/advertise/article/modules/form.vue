@@ -1,67 +1,104 @@
-<script setup lang="ts">
-import type { WorkbenchTodoItem } from '../typing';
+<script lang="ts" setup>
+import type { AdImageApi } from '#/api';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  VbenCheckbox,
-} from '@vben-core/shadcn-ui';
+import { computed, ref } from 'vue';
 
-interface Props {
-  items: WorkbenchTodoItem[];
-  title: string;
-}
+import { useVbenModal } from '@vben/common-ui';
 
-defineOptions({
-  name: 'WorkbenchTodo',
+import { Button, message } from 'ant-design-vue';
+
+import { useVbenForm } from '#/adapter/form';
+import { createAdImage, updateAdImage } from '#/api';
+import { $t } from '#/locales';
+
+import { useSchema } from '../data';
+
+const emit = defineEmits(['success']);
+const formData = ref<AdImageApi.AdImage>();
+const getTitle = computed(() => {
+  return formData.value?.id
+    ? $t('ui.actionTitle.edit', ['广告图'])
+    : $t('ui.actionTitle.create', ['广告图']);
 });
 
-withDefaults(defineProps<Props>(), {
-  items: () => [],
+const [Form, formApi] = useVbenForm({
+  layout: 'horizontal',
+  schema: useSchema(),
+  wrapperClass: 'grid-cols-2',
+  showDefaultActions: false,
+});
+
+function resetForm() {
+  formApi.resetForm();
+  formApi.setValues(formData.value || {});
+}
+
+const [Modal, modalApi] = useVbenModal({
+  class: 'w-[800px]',
+  async onConfirm() {
+    const { valid } = await formApi.validate();
+    if (valid) {
+      modalApi.lock();
+      const data = await formApi.getValues();
+      const params = {
+        url: data.files[0].response.url,
+        ...data,
+      };
+      try {
+        await (formData.value?.id
+          ? updateAdImage({ ...params, id: formData.value?.id })
+          : createAdImage(params));
+        modalApi.close();
+        message.success(
+          formData.value?.id
+            ? $t('ui.actionTitle.edit', ['广告图成功'])
+            : $t('ui.actionTitle.create', ['广告图成功']),
+        );
+        emit('success');
+      } finally {
+        modalApi.lock(false);
+      }
+    }
+  },
+  onOpenChange(isOpen) {
+    if (isOpen) {
+      const data = modalApi.getData<AdImageApi.AdImage>();
+      if (data) {
+        if (data.pid === 0) {
+          data.pid = undefined;
+        }
+        const formattedFiles = [
+          {
+            name: data.name,
+            status: 'done',
+            type: `images/${data.category}`,
+            url: data.url,
+            response: { url: data.url },
+            thumbUrl: data.url,
+            uid: data.id,
+          },
+        ];
+
+        formData.value = data;
+        formApi.setValues({
+          ...formData.value,
+          files: data.url ? formattedFiles : null,
+        });
+      }
+    }
+  },
 });
 </script>
 
 <template>
-  <Card>
-    <CardHeader class="py-4">
-      <CardTitle class="text-lg">{{ title }}</CardTitle>
-    </CardHeader>
-    <CardContent class="flex flex-wrap p-5 pt-0">
-      <ul class="divide-border w-full divide-y" role="list">
-        <li
-          v-for="item in items"
-          :key="item.title"
-          :class="{
-            'select-none line-through opacity-60': item.completed,
-          }"
-          class="flex cursor-pointer justify-between gap-x-6 py-5"
-        >
-          <div class="flex min-w-0 items-center gap-x-4">
-            <VbenCheckbox v-model:checked="item.completed" name="completed" />
-            <div class="min-w-0 flex-auto">
-              <div>
-                <span class="text-gray-300">项目名称:</span>
-                <p class="text-foreground text-sm font-semibold leading-6">
-                  {{ item.title }}
-                </p>
-              </div>
-
-              <!-- eslint-disable vue/no-v-html -->
-              <p
-                class="text-foreground/80 *:text-primary mt-1 truncate text-xs leading-5"
-                v-html="item.content"
-              ></p>
-            </div>
-          </div>
-          <div class="hidden h-full shrink-0 sm:flex sm:flex-col sm:items-end">
-            <span class="text-foreground/80 mt-6 text-xs leading-6">
-              {{ item.date }}
-            </span>
-          </div>
-        </li>
-      </ul>
-    </CardContent>
-  </Card>
+  <Modal :title="getTitle">
+    <Form class="mx-4" />
+    <template #prepend-footer>
+      <div class="flex-auto">
+        <Button type="primary" danger @click="resetForm">
+          {{ $t('common.reset') }}
+        </Button>
+      </div>
+    </template>
+  </Modal>
 </template>
