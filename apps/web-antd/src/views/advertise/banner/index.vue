@@ -111,6 +111,7 @@ const onDelete = async (row: RowType) => {
     .then(() => {
       gridApi.formApi.submitForm();
       message.success(`${row.name} 删除成功`);
+      handleFormSuccess();
     })
     .catch(() => {
       message.error(`${row.name} 删除失败`);

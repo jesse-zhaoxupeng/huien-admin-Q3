@@ -48,7 +48,7 @@ async function updateAdImage(params: AdImageApi.upDataFetchParams) {
  * 删除广告图
  */
 async function deleteAdImage(id: string) {
-  return requestClient.delete(`/adImage/${id}`);
+  return requestClient.delete(`/adImage?id=${id}`);
 }
 /**
  * 上传广告图
