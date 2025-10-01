@@ -12,7 +12,7 @@ export namespace AdImageApi {
   }
   export interface PageFetchParams {
     [key: string]: any;
-    pageNo?: number;
+    page?: number;
     pageSize?: number;
   }
   export interface upDataFetchParams {
@@ -30,30 +30,29 @@ export namespace AdImageApi {
  * 获取分页查询广告图
  */
 async function getAdImageList(params: AdImageApi.PageFetchParams) {
-  return requestClient.post<{ fileName: string; url: string }>(
-    '/adImage/page',
-    {
-      params,
-    },
-    {
-      responseType: 'blob',
-    },
-  );
+  return requestClient.post<Array<AdImageApi.AdImage>>('/adImage/page', params);
 }
 /**
- * 获取分页查询广告图
+ * 新增广告图
  */
-async function upDataAdImage(params: AdImageApi.upDataFetchParams) {
-  return requestClient.post<{ fileName: string; url: string }>(
-    '/adImage',
-    {
-      params,
-    },
-    {
-      responseType: 'blob',
-    },
-  );
+async function createAdImage(params: AdImageApi.upDataFetchParams) {
+  return requestClient.post('/adImage', params);
 }
+/**
+ * 更新广告图
+ */
+async function updateAdImage(params: AdImageApi.upDataFetchParams) {
+  return requestClient.put('/adImage', params);
+}
+/**
+ * 删除广告图
+ */
+async function deleteAdImage(id: string) {
+  return requestClient.delete(`/adImage/${id}`);
+}
+/**
+ * 上传广告图
+ */
 async function uploadFile({
   file,
   onError,
@@ -67,7 +66,7 @@ async function uploadFile({
     const uploadResult = {
       name: file.name, // 文件名
       status: 'done',
-      url: `https://www.huienmed:8181/images/${data}`, // 服务器返回的图片 URL
+      url: `${import.meta.env.VITE_APP_URL}/images/${data}`, // 服务器返回的图片 URL
     };
     onProgress?.({ percent: 100 });
     onSuccess?.(uploadResult, file);
@@ -76,4 +75,10 @@ async function uploadFile({
   }
 }
 
-export { getAdImageList, upDataAdImage, uploadFile };
+export {
+  createAdImage,
+  deleteAdImage,
+  getAdImageList,
+  updateAdImage,
+  uploadFile,
+};

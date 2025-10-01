@@ -1,13 +1,18 @@
 <script lang="ts" setup>
-import type { VxeTableGridOptions } from '#/adapter/vxe-table';
+import type {
+  OnActionClickParams,
+  VxeTableGridOptions,
+} from '#/adapter/vxe-table';
+import type { AdImageApi } from '#/api';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import { Button } from 'ant-design-vue';
+import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getAdImageList } from '#/api';
+import { deleteAdImage, getAdImageList } from '#/api';
 
+import { useColumns } from './data';
 import Form from './modules/form.vue';
 
 interface RowType {
@@ -87,12 +92,9 @@ const [FormModal, formModalApi] = useVbenModal({
  * 编辑部门
  * @param row
  */
-// function onEdit(row: AdImageApi.Indication) {
-//   console.info('edit 删除处理逻辑', row);
-//   console.info('formModalApi', formModalApi);
-//   formModalApi.setData(row).open();
-//   // formModalApi.setData(row).open();
-// }
+function onEdit(row: AdImageApi.AdImage) {
+  formModalApi.setData(row).open();
+}
 
 /**
  * 创建新部门
@@ -101,38 +103,41 @@ function onCreate() {
   formModalApi.setData(null).open();
 }
 
-// /**
-//  * 删除
-//  */
-// const onDelete = async (row) => {
-//   const res = await deleteHospital(row.id);
-//   console.info('res', res);
-//   gridApi.formApi.submitForm();
-//   message.success(`${row.name} 删除成功`);
-// };
+/**
+ * 删除
+ */
+const onDelete = async (row: RowType) => {
+  deleteAdImage(row.id)
+    .then(() => {
+      gridApi.formApi.submitForm();
+      message.success(`${row.name} 删除成功`);
+    })
+    .catch(() => {
+      message.error(`${row.name} 删除失败`);
+    });
+};
 
 // deleteCity
 
-// /**
-//  * 表格操作按钮的回调函数
-//  */
-// function onActionClick({
-//   code,
-//   row,
-// }: OnActionClickParams<AdImageApi.Indication>) {
-//   switch (code) {
-//     case 'delete': {
-//       onDelete(row);
-
-//       break;
-//     }
-//     case 'edit': {
-//       onEdit(row);
-//       break;
-//     }
-//   }
-// }
-
+/**
+ * 表格操作按钮的回调函数
+ */
+function onActionClick({ code, row }: OnActionClickParams<AdImageApi.AdImage>) {
+  switch (code) {
+    case 'delete': {
+      onDelete(row);
+      break;
+    }
+    case 'edit': {
+      onEdit(row);
+      break;
+    }
+  }
+}
+function handleFormSuccess() {
+  // ✅ 刷新表格数据
+  gridApi.reload();
+}
 const gridOptions: VxeTableGridOptions<RowType> = {
   gridEvents: {},
   checkboxConfig: {
@@ -140,7 +145,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     labelField: 'name',
   },
   border: true,
-  // columns: useColumns(onActionClick),
+  columns: useColumns(onActionClick),
   exportConfig: {},
   height: 'auto',
   keepSource: true,
@@ -155,8 +160,8 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         });
 
         return {
-          items: res.data,
-          total: res.totalPages,
+          items: res.list,
+          total: res.totalRecords,
         };
       },
     },
@@ -177,7 +182,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 <template>
   <Page auto-content-height>
-    <FormModal />
+    <FormModal @success="handleFormSuccess" />
     <Grid table-title="广告图片列表">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate"> 新增 </Button>

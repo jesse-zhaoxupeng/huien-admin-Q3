@@ -30,29 +30,30 @@ export function useSchema(): VbenFormSchema[] {
         options: [
           {
             label: '系统内文章',
-            value: '1',
+            value: 1,
           },
           {
             label: '外链',
-            value: '2',
+            value: 2,
           },
         ],
       },
+      defaultValue: 1,
       fieldName: 'linkType',
       labelWidth: 120,
       label: '跳转类型',
       rules: z
-        .string()
-        .refine(
-          (val) => val !== undefined && val !== null && val.trim() !== '',
-          {
-            message: $t('ui.formRules.selectRequired', ['跳转目标']), // 或自定义提示
-          },
-        ),
+        .number()
+        .refine((val) => val !== undefined && val !== null && val > 0, {
+          message: $t('ui.formRules.selectRequired', ['跳转目标']), // 或自定义提示
+        }),
     },
     {
       component: 'Input',
-      help: () => ['存储文章id'].map((v) => h('p', v)),
+      help: () =>
+        ['小程序跳转内部是需要填写文章ID，外链时候需要填写完整外链地址'].map(
+          (v) => h('p', v),
+        ),
       fieldName: 'linkData',
       labelWidth: 120,
       label: '跳转目标',
@@ -88,10 +89,15 @@ export function useSchema(): VbenFormSchema[] {
         disabled: true,
       },
       dependencies: {
-        // trigger(values, form) {
-        //   // console.log(values, form);
-        //   // form.setFieldValue('field2', values.field1);
-        // },
+        trigger(values, form) {
+          if (values.files) {
+            const type =
+              values.files[0].type.split('/')[
+                values.files[0].type.split('/').length - 1
+              ];
+            form.setFieldValue('category', type);
+          }
+        },
         // 只有指定的字段改变时，才会触发
         triggerFields: ['files'],
       },
@@ -130,17 +136,17 @@ export function useSchema(): VbenFormSchema[] {
       component: 'Textarea',
       componentProps: {
         class: 'w-full',
-        maxLength: 50,
+        maxLength: 300,
         rows: 3,
         showCount: true,
       },
-      fieldName: 'remark',
+      fieldName: 'comment',
       labelWidth: 120,
       formItemClass: 'col-span-2 items-start',
       label: '备注',
       rules: z
         .string()
-        .max(50, $t('ui.formRules.maxLength', ['备注', 50]))
+        .max(300, $t('ui.formRules.maxLength', ['备注', 300]))
         .optional(),
     },
   ];
@@ -156,12 +162,7 @@ export function useColumns(
 ): VxeTableGridOptions<AdImageApi.AdImage>['columns'] {
   return [
     { title: '序号', type: 'seq', width: 50, fixed: 'left' },
-    {
-      field: 'id',
-      title: 'ID',
-      fixed: 'left',
-      width: 80,
-    },
+
     {
       align: 'left',
       field: 'name',
@@ -171,48 +172,56 @@ export function useColumns(
       width: 360,
     },
     {
+      field: 'id',
+      fixed: 'left',
+      title: '图片ID',
+    },
+    {
       field: 'url',
       title: '图片url',
       fixed: 'left',
-      width: 80,
     },
 
     {
-      field: 'description',
-      title: '图片描述',
-      width: 180,
-    },
-    {
       field: 'category',
       title: '图片类型',
       width: 180,
     },
     {
-      field: 'category',
-      title: '图片类型',
+      field: 'linkType',
+      title: '跳转类型',
       width: 180,
+      formatter: ({ row }) => {
+        switch (row.linkType) {
+          case 1: {
+            return '系统内文章';
+          }
+          case 2: {
+            return '外链';
+          }
+        }
+        return '';
+      },
     },
     {
-      field: 'link_data',
+      field: 'linkData',
       title: '跳转目标',
       width: 180,
     },
     {
-      field: '跳转类型',
-      title: 'link_type',
-      width: 180,
+      field: 'description',
+      title: '图片描述',
     },
     {
       field: 'comment',
       title: '备注',
-      width: 180,
     },
     {
       align: 'right',
       cellRender: {
         attrs: {
           nameField: 'productName',
-          nameTitle: '医院',
+          nameTitle: '广告图',
           onClick: onActionClick,
         },
         name: 'CellOperation',
