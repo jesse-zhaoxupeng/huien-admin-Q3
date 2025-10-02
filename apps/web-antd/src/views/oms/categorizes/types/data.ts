@@ -62,7 +62,7 @@ export function useSchema(): VbenFormSchema[] {
     //     allowClear: true,
     //     immediate: true,
     //     api: async () => {
-    //       return await getCitysList({ isShowTree: '1' });
+    //       return await getCitysList();
     //     },
     //     class: 'w-full',
     //     fieldNames: {

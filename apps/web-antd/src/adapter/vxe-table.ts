@@ -74,7 +74,6 @@ setupVbenVxeTable({
     vxeUI.renderer.add('CellProjectStatusTag', {
       renderTableDefault({ options, props }, { column, row }) {
         const value = get(row, column.field);
-        console.log('CellProjectStatusTag:', column.field, '值:', value, '行数据:', row);
         const tagOptions = options ?? [
           {
             color: 'warning',
@@ -86,10 +85,10 @@ setupVbenVxeTable({
             label: '正在招募',
             value: '206628519472642133136',
           },
-          { 
-            color: 'error', 
-            label: '停止招募', 
-            value: '206628562022253305061' 
+          {
+            color: 'error',
+            label: '停止招募',
+            value: '206628562022253305061',
           },
           // 添加简单数字状态值的映射，便于正确显示
           { color: 'warning', label: '等待招募', value: '0' },
@@ -97,7 +96,6 @@ setupVbenVxeTable({
           { color: 'error', label: '停止招募', value: '2' },
         ];
         const tagItem = tagOptions.find((item) => item.value === value);
-        console.log('找到的标签项:', tagItem);
         return h(
           Tag,
           {
@@ -170,6 +168,25 @@ setupVbenVxeTable({
       },
     });
 
+    // 单元格渲染： Tag
+    vxeUI.renderer.add('CellArticleStatusTag', {
+      renderTableDefault({ options, props }, { column, row }) {
+        const value = get(row, column.field);
+        const tagOptions = options ?? [
+          { color: 'success', label: '上架', value: 1 },
+          { color: 'default', label: '下架', value: 2 },
+        ];
+        const tagItem = tagOptions.find((item) => item.value === value);
+        return h(
+          Tag,
+          {
+            ...props,
+            ...objectOmit(tagItem ?? {}, ['label']),
+          },
+          { default: () => tagItem?.label ?? value },
+        );
+      },
+    });
     // 表格配置项可以用 cellRender: { name: 'CellLink' },
     vxeUI.renderer.add('CellLink', {
       renderTableDefault(renderOpts) {

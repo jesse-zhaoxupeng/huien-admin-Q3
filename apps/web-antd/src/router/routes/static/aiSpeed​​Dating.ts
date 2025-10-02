@@ -8,11 +8,11 @@ const routes: RouteRecordRaw[] = [
       icon: 'ic:baseline-view-in-ar',
       keepAlive: true,
       order: 1,
-      title: $t('aiSpeed​​Dating.title'),
+      title: $t('aiSpeedDating.title'),
     },
-    name: 'aiSpeed​​Dating',
-    path: '/aiSpeed​​Dating',
-    component: () => import('#/views/aiSpeed​​Dating/index.vue'),
+    name: 'aiSpeedDating',
+    path: '/aiSpeedDating',
+    component: () => import('#/views/aiSpeedDating/index.vue'),
   },
 ];
 

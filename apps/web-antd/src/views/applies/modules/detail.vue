@@ -154,7 +154,6 @@ const [DetailModal, modalApi] = useVbenModal({
   onOpenChange(isOpen) {
     if (isOpen) {
       const data = modalApi.getData<IndicationsApi.Indication>();
-      console.info('data =>', data);
       if (data) {
         formData.value = data.row;
         mode.value = data.mode;
@@ -179,10 +178,10 @@ const [DetailModal, modalApi] = useVbenModal({
       >
         <DescriptionsItem label="姓名">{{ formData.name }}</DescriptionsItem>
         <DescriptionsItem label="手机号">
-          {{ formData.referrer_phone }}
+          {{ formData.referrerPhone }}
         </DescriptionsItem>
         <DescriptionsItem label="身份证号">
-          {{ formData.id_card_no }}
+          {{ formData.idCardNo }}
         </DescriptionsItem>
         <DescriptionsItem label="民族">
           {{ formData.nationality }}
@@ -202,10 +201,10 @@ const [DetailModal, modalApi] = useVbenModal({
           }}
         </DescriptionsItem>
         <DescriptionsItem label="所属城市">
-          {{ formData.province.cityname }} / {{ formData.city.cityname }}
+          {{ formData.cityFullName }}
         </DescriptionsItem>
         <DescriptionsItem label="报名时间">
-          {{ formData.create_time }}
+          {{ formData.createTime }}
         </DescriptionsItem>
         <DescriptionsItem label="图片" :span="3" />
       </Descriptions>
@@ -220,28 +219,28 @@ const [DetailModal, modalApi] = useVbenModal({
         }"
       >
         <DescriptionsItem label="项目名称" :span="3">
-          {{ formData.project.project_name }}
+          {{ formData.projectName }}
           <!-- <EllipsisText :max-width="560">
             {{ formData.project.project_name }}
           </EllipsisText> -->
         </DescriptionsItem>
         <DescriptionsItem label="项目类型">
-          {{ formData.project.type.label }}
+          {{ formData.projectTypeName }}
         </DescriptionsItem>
         <DescriptionsItem label="报名医院">
-          {{ formData.hospital.name }}
+          {{ formData.hospitalName }}
         </DescriptionsItem>
         <DescriptionsItem label="性别要求">
-          {{ formData.project.gender.label }}
+          {{ formData.gender }}
         </DescriptionsItem>
         <DescriptionsItem label="项目分期">
-          {{ formData.project.stage?.label }}
+          {{ formData.projectStageName }}
         </DescriptionsItem>
         <DescriptionsItem label="入组人数">
-          {{ formData.applyed_hospital?.recruitment_count }}
+          {{ formData.projectRecruitmentCount }}
         </DescriptionsItem>
         <DescriptionsItem label="体检时间">
-          {{ formData.applyed_hospital?.checkup_date }}
+          {{ formData.projectCheckupDate }}
           <!-- {{ formData.project.label }} -->
         </DescriptionsItem>
       </Descriptions>
@@ -255,10 +254,10 @@ const [DetailModal, modalApi] = useVbenModal({
         }"
       >
         <DescriptionsItem label="审核状态" :span="3">
-          {{ formData.audit_status.label }}
+          {{ formData.status }}
         </DescriptionsItem>
         <DescriptionsItem label="驳回原因" :span="3">
-          {{ formData.rejected_reason || '-' }}
+          {{ formData.rejectedReason || '-' }}
         </DescriptionsItem>
       </Descriptions>
     </div>

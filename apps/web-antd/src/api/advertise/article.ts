@@ -4,7 +4,7 @@ export namespace ArticleApi {
   export interface Article {
     [key: string]: any;
     /** 图片ID */
-    id: string;
+    id: number;
     /** 文章标题 */
     title: string;
     /** 封面图 */
@@ -29,6 +29,7 @@ export namespace ArticleApi {
     articleContent: string;
   }
   export interface upDataFetchParams {
+    files: any;
     /** 文章标题*/
     title: string;
     /** 封面图*/
@@ -36,7 +37,7 @@ export namespace ArticleApi {
     /** 文章内容，富文本*/
     articleContent: string;
     /** 文章ID*/
-    id: number;
+    id?: number;
   }
   export interface upDownArticleFetchParams {
     /** 1上架 2下架*/
@@ -62,7 +63,7 @@ async function updateArticle(params: ArticleApi.upDataFetchParams) {
 /**
  * 删除文章
  */
-async function deleteArticle(id: string) {
+async function deleteArticle(id: number) {
   return requestClient.delete(`/article?id=${id}`);
 }
 
@@ -80,7 +81,7 @@ async function getArticleDetail(id: string) {
   return requestClient.get(`/article/${id}`);
 }
 /**
- * 获取分页查询广告图
+ * 获取分页查询文章
  */
 async function getArticleList(params: ArticleApi.PageFetchParams) {
   return requestClient.post<Array<ArticleApi.Article>>('/article/page', params);

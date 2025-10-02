@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { WorkbenchTodoItem } from '../typing';
+import type { MyTodoParticipantsApi } from '#/api';
 
 import { Card, CardContent } from '@vben-core/shadcn-ui';
 
 import { Button } from 'ant-design-vue';
 
 interface Props {
-  items: WorkbenchTodoItem[];
+  items: MyTodoParticipantsApi.MyTodoParticipants[];
   title: string;
 }
 

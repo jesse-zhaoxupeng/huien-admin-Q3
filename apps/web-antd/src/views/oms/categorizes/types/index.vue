@@ -48,7 +48,7 @@ const formOptions: VbenFormProps = {
         allowClear: true,
         immediate: true,
         api: async () => {
-          return await getCitysList({ isShowTree: '1' });
+          return await getCitysList();
         },
         class: 'w-full',
         fieldNames: {
@@ -108,10 +108,10 @@ function onCreate() {
  * 删除
  */
 const onDelete = async (row: CategorizesTypesApi.CategorizeType) => {
-  const res = await deleteCategorizeType(row.id);
-
-  gridApi.formApi.submitForm();
-  message.success(`${row.name} 删除成功`);
+  deleteCategorizeType(row.id).then(() => {
+    gridApi.formApi.submitForm();
+    message.success(`${row.name} 删除成功`);
+  });
 };
 
 // deleteCity
@@ -156,9 +156,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           pageSize: page.pageSize,
           ...formValues,
         });
-
-        console.log(res);
-
         return {
           items: res,
           total: 10,

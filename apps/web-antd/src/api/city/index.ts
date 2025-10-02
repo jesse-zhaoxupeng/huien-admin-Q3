@@ -20,12 +20,10 @@ export namespace CitysApi {
 }
 
 /**
- * 获取适应症列表数据
+ * 省市树查询
  */
-async function getCitysList(params: CitysApi.PageFetchParams) {
-  return requestClient.get<Array<CitysApi.City>>('/city', {
-    params,
-  });
+async function getCitysList() {
+  return requestClient.get<Array<CitysApi.City>>('/city/tree');
 }
 
 //

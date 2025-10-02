@@ -112,7 +112,6 @@ export function useColumns(
       title: '所属城市',
       width: 100,
     },
-
     {
       field: 'create_time',
       title: '报名时间',

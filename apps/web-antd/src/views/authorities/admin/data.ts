@@ -67,7 +67,7 @@ export function useSchema(): VbenFormSchema[] {
     //     allowClear: true,
     //     immediate: true,
     //     api: async () => {
-    //       return await getCitysList({ isShowTree: '1' });
+    //       return await getCitysList();
     //     },
     //     class: 'w-full',
     //     fieldNames: {
@@ -100,9 +100,7 @@ export function useSchema(): VbenFormSchema[] {
         valueField: 'id',
         placeholder: '请选择 账号类型',
         showSearch: true,
-        onChange: (value) => {
-          console.log('value', value);
-
+        onChange: () => {
           // formApi?.setFieldValue('project_stage', '');
         },
       },
